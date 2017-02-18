@@ -1,22 +1,113 @@
 <!DOCTYPE html>
-<html class="no-js">
+<html lang="en">
 <head>
-
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 <title>Johannes Hess</title>
 <meta name="viewport" content="width=device-width">
-<link rel="stylesheet" href="css/main.css">
+</head>
+
+<style type="text/css">
+body {
+    font-size: 16px;
+    background: #c7eaea;
+    color: #1d1e19;
+    font-family: monospace;
+    width: 100%;
+    overflow-x: hidden;
+}
+/*.page {
+    transform:rotate(2deg);
+    -ms-transform:rotate(2deg);
+     IE 9
+    -webkit-transform:rotate(2deg);
+    /* Opera, Chrome, and Safari
+}*/
+canvas {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: -9999;
+}
+</style>
 
 <body>
 <div class="page">
-    <div>
-        <img src="img/schriftprobe.png" alt="Schriftprobe" title="Schriftprobe für den elektromechanischen Kopiertelegrafen von Edmund Forman Barnes aus dem Jahr 1861. Quelle: Korn, Glatzel - Handbuch der Phototelegraphie und Teleautographie (1911)">
-    </div>
-    <div>
         <p>Hallo, mein Name ist Johannes Hess.</p>
         <p>Ich wohne in Weimar und studiere Medienwissenschaft.</p>
         <p>☞ <a href="mailto:johannes.hess.2@gmail.com">email</a></p>
-    </div>
 </div>
+
+<script src="js/three.js"></script>
+<script src="js/OrbitControls.js"></script>
+<script src="js/OBJLoader.js"></script>
+<script src="js/MTLLoader.js"></script>
+<script src="js/DDSLoader.js"></script>
+
+<script>
+var scene, camera, renderer;
+
+init();
+animate();
+
+function init() {
+
+scene = new THREE.Scene();
+var WIDTH = window.innerWidth,
+HEIGHT = window.innerHeight;
+
+renderer = new THREE.WebGLRenderer({antialias:false, alpha: true});
+renderer.setSize(WIDTH, HEIGHT);
+document.body.appendChild(renderer.domElement);
+
+camera = new THREE.PerspectiveCamera(25, WIDTH / HEIGHT, 0.01, 20000);
+camera.position.set(0.5,0,1.7);
+scene.add(camera);
+
+window.addEventListener('resize', function() {
+    var WIDTH = window.innerWidth,
+    HEIGHT = window.innerHeight;
+    renderer.setSize(WIDTH, HEIGHT);
+    camera.aspect = WIDTH / HEIGHT;
+    camera.updateProjectionMatrix();
+});
+
+var color = "#ffffff";
+var ambient = new THREE.AmbientLight(color);
+scene.add(ambient);
+
+THREE.Loader.Handlers.add( /\.dds$/i, new THREE.DDSLoader() );
+
+var mtlLoader = new THREE.MTLLoader();
+mtlLoader.setPath( 'obj/' );
+mtlLoader.load( 'material.mtl', function( materials ) {
+    materials.preload();
+    var objLoader = new THREE.OBJLoader();
+    objLoader.setMaterials( materials );
+    objLoader.setPath( 'obj/' );
+    objLoader.load( 'ich.obj', function ( object ) {
+        scene.add( object );
+        object.traverse( function( node ) {
+            if( node.material ) {
+            node.material.side = THREE.DoubleSide;
+            }
+        });
+    });
+});
+
+
+
+controls = new THREE.OrbitControls(camera, renderer.domElement);
+}
+
+function animate() {
+    requestAnimationFrame(animate);
+    renderer.render(scene, camera);
+    controls.update();
+}
+</script>
+
 </body>
+</html>

@@ -1,0 +1,9 @@
+newmtl atlas0
+Ka 1.000 1.000 1.000
+Kd 1.000 1.000 1.000
+Ks 0.000 0.000 0.000
+map_Ka atlas0.jpg
+map_Kd atlas0.jpg
+map_Ks atlas0.jpg
+
+
